@@ -11,14 +11,22 @@ namespace June2026.ConsoleApp2;
 
 internal class AdoDotNetService
 {
-    public void Read() {
-        SqlConnectionStringBuilder sb = new SqlConnectionStringBuilder();
-        sb.DataSource = "ASPIERLITE16";
-        sb.InitialCatalog = "June2026Db";
-        sb.UserID = "sa";
-        sb.Password = "sasa@123";
-        sb.TrustServerCertificate = true;
 
+    private readonly SqlConnectionStringBuilder sb;
+
+    public AdoDotNetService()
+    {
+        sb = new SqlConnectionStringBuilder
+        {
+            DataSource = "ASPIERLITE16",
+            InitialCatalog = "June2026Db",
+            UserID = "sa",
+            Password = "sasa@123",
+            TrustServerCertificate = true
+        };
+    }
+    public void Read()
+    {
         SqlConnection connection = new SqlConnection(sb.ConnectionString);
         connection.Open();
 
@@ -33,9 +41,17 @@ internal class AdoDotNetService
                             FROM [dbo].[Tbl_Student]";
 
         SqlCommand cmd = new SqlCommand(query, connection);
+
         SqlDataAdapter adapter = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
         adapter.Fill(dt);
+
+
+        //SqlDataReader reader = cmd.ExecuteReader();
+        //while (reader.Read())
+        //{
+        //    Console.WriteLine(reader["StudentName"]);
+        //}
         connection.Close();
 
         foreach (DataRow item in dt.Rows)
@@ -53,15 +69,35 @@ internal class AdoDotNetService
         }
     }
 
+    //public void Read()
+    //{
+    //    string connectionString = @"Data Source = ASPIERLITE16;
+    //    Initial Catalog = June2026Db;
+    //    User ID = sa;
+    //    Password = sasa@123;
+    //    TrustServerCertificate = true";
+
+    //    SqlConnection connection = new SqlConnection(connectionString);
+    //    connection.Open();
+    //    string query = @"SELECT [StudentId]
+    //                        ,[StudentName]
+    //                        ,[StudentNo]
+    //                        ,[FatherName]
+    //                        ,[DateOfBirthday]
+    //                        ,[Email]
+    //                        ,[MobileNo]
+    //                        ,[IsDelete]
+    //                        FROM [dbo].[Tbl_Student]";
+
+    //    SqlCommand cmd = new SqlCommand(query, connection);
+    //    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+    //    DataTable dt = new DataTable();
+    //    adapter.Fill(dt);
+    //}
+
+
     public void Create()
     {
-        SqlConnectionStringBuilder sb = new SqlConnectionStringBuilder();
-        sb.DataSource = "ASPIERLITE16";
-        sb.InitialCatalog = "June2026Db";
-        sb.UserID = "sa";
-        sb.Password = "sasa@123";
-        sb.TrustServerCertificate = true;
-
         SqlConnection connection = new SqlConnection(sb.ConnectionString);
         connection.Open();
         string query = @"INSERT INTO [dbo].[Tbl_Student] 
@@ -86,13 +122,6 @@ VALUES
 
     public void Update()
     {
-        SqlConnectionStringBuilder sb = new SqlConnectionStringBuilder();
-        sb.DataSource = "ASPIERLITE16";
-        sb.InitialCatalog = "June2026Db";
-        sb.UserID = "sa";
-        sb.Password = "sasa@123";
-        sb.TrustServerCertificate = true;
-
         SqlConnection connection = new SqlConnection(sb.ConnectionString);
         connection.Open();
         string query = @"UPDATE [dbo].[Tbl_Student]
@@ -107,13 +136,6 @@ VALUES
 
     public void Delete()
     {
-        SqlConnectionStringBuilder sb = new SqlConnectionStringBuilder();
-        sb.DataSource = "ASPIERLITE16";
-        sb.InitialCatalog = "June2026Db";
-        sb.UserID = "sa";
-        sb.Password = "sasa@123";
-        sb.TrustServerCertificate = true;
-
         SqlConnection connection = new SqlConnection(sb.ConnectionString);
         connection.Open();
         string query = @"UPDATE [dbo].[Tbl_Student]
