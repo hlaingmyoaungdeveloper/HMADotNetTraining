@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -25,11 +26,72 @@ internal class AdoDotNetService
             TrustServerCertificate = true
         };
     }
+    //public void Read()
+    //{
+    //    SqlConnection connection = new SqlConnection(sb.ConnectionString);
+    //    connection.Open();
+
+    //    string query = @"SELECT [StudentId]
+    //                        ,[StudentName]
+    //                        ,[StudentNo]
+    //                        ,[FatherName]
+    //                        ,[DateOfBirthday]
+    //                        ,[Email]
+    //                        ,[MobileNo]
+    //                        ,[IsDelete]
+    //                        FROM [dbo].[Tbl_Student]";
+
+    //    SqlCommand cmd = new SqlCommand(query, connection);
+
+    //    Console.WriteLine("using SqlDataAdapter");
+    //    Stopwatch stopwatch = new Stopwatch();
+    //    stopwatch.Start();
+    //    Console.WriteLine("Start");
+    //    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+    //    DataTable dt = new DataTable();
+    //    adapter.Fill(dt);
+    //    stopwatch.Stop();
+    //    Console.WriteLine("End time :" + stopwatch.ElapsedMilliseconds);
+
+    //    Console.WriteLine("using SqlDataReader");
+    //    Stopwatch stopwatch1 = new Stopwatch();
+    //    stopwatch1.Start();
+    //    Console.WriteLine("Start time");
+    //    SqlDataReader reader = cmd.ExecuteReader();
+    //    while (reader.Read())
+    //    {
+    //        Console.WriteLine(reader["StudentName"]);
+    //    }
+    //    stopwatch1.Stop();
+    //    Console.WriteLine("End time :" + stopwatch1.ElapsedMilliseconds);
+
+    //    connection.Close();
+
+    //    foreach (DataRow item in dt.Rows)
+    //    {
+    //        Console.WriteLine(item["StudentId"]);
+    //        Console.WriteLine(item["StudentName"]);
+    //        Console.WriteLine(item["StudentNo"]);
+    //        Console.WriteLine(item["FatherName"]);
+    //        DateTime birthday = Convert.ToDateTime(item["DateOfBirthday"]);
+    //        Console.WriteLine(birthday.ToString("dd-MMM-yyyy"));
+    //        Console.WriteLine(item["Email"]);
+    //        Console.WriteLine(item["MobileNo"]);
+    //        Console.WriteLine(item["IsDelete"]);
+    //        Console.WriteLine("-----------------------------------------");
+    //    }
+    //} testing compare SqlDataAdapter and SqlDataReader
+
     public void Read()
     {
+        //string connectionString = @"Data Source = ASPIERLITE16;
+        //Initial Catalog = June2026Db;
+        //User ID = sa;
+        //Password = sasa@123;
+        //TrustServerCertificate = true";
+
         SqlConnection connection = new SqlConnection(sb.ConnectionString);
         connection.Open();
-
         string query = @"SELECT [StudentId]
                             ,[StudentName]
                             ,[StudentNo]
@@ -41,19 +103,9 @@ internal class AdoDotNetService
                             FROM [dbo].[Tbl_Student]";
 
         SqlCommand cmd = new SqlCommand(query, connection);
-
         SqlDataAdapter adapter = new SqlDataAdapter(cmd);
         DataTable dt = new DataTable();
         adapter.Fill(dt);
-
-
-        //SqlDataReader reader = cmd.ExecuteReader();
-        //while (reader.Read())
-        //{
-        //    Console.WriteLine(reader["StudentName"]);
-        //}
-        connection.Close();
-
         foreach (DataRow item in dt.Rows)
         {
             Console.WriteLine(item["StudentId"]);
@@ -68,32 +120,6 @@ internal class AdoDotNetService
             Console.WriteLine("-----------------------------------------");
         }
     }
-
-    //public void Read()
-    //{
-    //    string connectionString = @"Data Source = ASPIERLITE16;
-    //    Initial Catalog = June2026Db;
-    //    User ID = sa;
-    //    Password = sasa@123;
-    //    TrustServerCertificate = true";
-
-    //    SqlConnection connection = new SqlConnection(connectionString);
-    //    connection.Open();
-    //    string query = @"SELECT [StudentId]
-    //                        ,[StudentName]
-    //                        ,[StudentNo]
-    //                        ,[FatherName]
-    //                        ,[DateOfBirthday]
-    //                        ,[Email]
-    //                        ,[MobileNo]
-    //                        ,[IsDelete]
-    //                        FROM [dbo].[Tbl_Student]";
-
-    //    SqlCommand cmd = new SqlCommand(query, connection);
-    //    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
-    //    DataTable dt = new DataTable();
-    //    adapter.Fill(dt);
-    //}
 
 
     public void Create()
