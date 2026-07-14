@@ -13,11 +13,11 @@ namespace June2026.ConsoleApp2;
 internal class AdoDotNetService
 {
 
-    private readonly SqlConnectionStringBuilder sb;
+    private readonly SqlConnectionStringBuilder _sb;
 
     public AdoDotNetService()
     {
-        sb = new SqlConnectionStringBuilder
+        _sb = new SqlConnectionStringBuilder
         {
             DataSource = "ASPIERLITE16",
             InitialCatalog = "June2026Db",
@@ -90,7 +90,7 @@ internal class AdoDotNetService
         //Password = sasa@123;
         //TrustServerCertificate = true";
 
-        SqlConnection connection = new SqlConnection(sb.ConnectionString);
+        SqlConnection connection = new SqlConnection(_sb.ConnectionString);
         connection.Open();
         string query = @"SELECT [StudentId]
                             ,[StudentName]
@@ -124,7 +124,7 @@ internal class AdoDotNetService
 
     public void Create()
     {
-        SqlConnection connection = new SqlConnection(sb.ConnectionString);
+        SqlConnection connection = new SqlConnection(_sb.ConnectionString);
         connection.Open();
         string query = @"INSERT INTO [dbo].[Tbl_Student] 
             ([StudentName], 
@@ -148,21 +148,23 @@ VALUES
 
     public void Update()
     {
-        SqlConnection connection = new SqlConnection(sb.ConnectionString);
+        SqlConnection connection = new SqlConnection(_sb.ConnectionString);
         connection.Open();
         string query = @"UPDATE [dbo].[Tbl_Student]
-                        SET [StudentName] = 'Mg Mg',
-                        [Email] = 'mgmg@gmail.com'
+                        SET [StudentName] = @studentName,
+                        [Email] = @email,
                         WHERE [StudentId] = 1;";
 
         SqlCommand cmd = new SqlCommand(query, connection);
+        cmd.Parameters.AddWithValue("@studentName","Mg Mg");
+        cmd.Parameters.AddWithValue("@email", "mgmg@gmail.com");
         int result = cmd.ExecuteNonQuery();
         connection.Close();
     }
 
     public void Delete()
     {
-        SqlConnection connection = new SqlConnection(sb.ConnectionString);
+        SqlConnection connection = new SqlConnection(_sb.ConnectionString);
         connection.Open();
         string query = @"UPDATE [dbo].[Tbl_Student]
                          SET [IsDelete] = 1
