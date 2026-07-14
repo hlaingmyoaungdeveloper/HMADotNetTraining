@@ -13,11 +13,11 @@ namespace June2026.ConsoleApp3
 {
     internal class DapperService
     {
-        private readonly SqlConnectionStringBuilder sb;
+        private readonly SqlConnectionStringBuilder _sb;
 
         public DapperService()
         {
-            sb = new SqlConnectionStringBuilder
+            _sb = new SqlConnectionStringBuilder
             {
                 DataSource = "ASPIERLITE16",
                 InitialCatalog = "June2026Db",
@@ -29,7 +29,7 @@ namespace June2026.ConsoleApp3
 
         public void Read()
         {
-            using (IDbConnection db = new SqlConnection(sb.ConnectionString))
+            using (IDbConnection db = new SqlConnection(_sb.ConnectionString))
             {
                 db.Open();
                 List<Student> students = db.Query<Student>("SELECT * FROM [dbo].[Tbl_Student]").ToList();
@@ -42,7 +42,7 @@ namespace June2026.ConsoleApp3
 
         public void Create()
         {
-            using (IDbConnection db = new SqlConnection(sb.ConnectionString))
+            using (IDbConnection db = new SqlConnection(_sb.ConnectionString))
             {
                 db.Open();
                 int result = db.Execute(@"INSERT INTO [dbo].[Tbl_Student] 
@@ -65,7 +65,7 @@ namespace June2026.ConsoleApp3
 
         public void Update()
         {
-            using (IDbConnection db = new SqlConnection(sb.ConnectionString))
+            using (IDbConnection db = new SqlConnection(_sb.ConnectionString))
             {
                 db.Open();
                 int result = db.Execute(@"UPDATE [dbo].[Tbl_Student]
@@ -78,7 +78,7 @@ namespace June2026.ConsoleApp3
 
         public void Delete()
         {
-            using (IDbConnection db = new SqlConnection(sb.ConnectionString))
+            using (IDbConnection db = new SqlConnection(_sb.ConnectionString))
             {
                 db.Open();
                 int result = db.Execute("DELETE FROM [dbo].[Tbl_Student] WHERE StudentId = 5");
