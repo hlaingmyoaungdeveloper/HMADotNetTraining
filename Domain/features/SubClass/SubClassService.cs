@@ -1,4 +1,4 @@
-﻿using Domain.models;
+using Domain.models;
 using June2026.OCMSDatabase.AppDbContextModels;
 using System;
 using System.Collections.Generic;
@@ -32,7 +32,9 @@ public class SubClassService
         //    Classes.Add(classes);
         //}
         //SubClasses = Classes,
-        var SubClasses = _db.TblSubClasses.Select(x => new SubClassModel
+        var SubClasses = _db.TblSubClasses
+            .Where(x => x.IsDelete == false)
+            .Select(x => new SubClassModel
         {
             ClassName = x.ClassName,
             Location = x.Location,
@@ -126,7 +128,7 @@ public class SubClassService
             subClass.Location = model.Location;
         }
 
-        if (model.StudentLimit != null)
+        if (model.StudentLimit != null && model.StudentLimit > subClass.StudentCount)
         {
             subClass.StudentLimit = model.StudentLimit;
         }
@@ -163,6 +165,17 @@ public class SubClassService
                 Message = "SubClass doesn't exist"
             };
         }
+        
+        var hasEnrollments = _db.TblEnrollments.Any(x => x.SubClassId == model.SubClassId);
+        if (hasEnrollments)
+        {
+            return new SubClassDeleteResponseModel
+            {
+                IsSuccess = false,
+                Message = "Cannot delete SubClass because it has enrollments."
+            };
+        }
+        
         subClass.IsDelete = true;
         int result = _db.SaveChanges();
         return new SubClassDeleteResponseModel

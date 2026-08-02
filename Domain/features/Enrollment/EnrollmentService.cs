@@ -19,7 +19,6 @@ public class EnrollmentService
     {
         var enrollments = _db.TblEnrollments.Select(x => new EnrollmentModel
         {
-            EnrollmentId = x.EnrollmentId,
             SubClassId = x.SubClassId,
             StudentName = x.StudentName,
             StudentContact = x.StudentContact,
@@ -68,10 +67,29 @@ public class EnrollmentService
     public EnrollmentCreateResponseModel CreateEnrollment(EnrollmentCreateRequestModel model)
     {
         var subClass = _db.TblSubClasses.FirstOrDefault(x => x.SubClassId  == model.SubClassId);
+        if (subClass is null)
+        {
+            return new EnrollmentCreateResponseModel
+            {
+                IsSuccess = false,
+                Message = "SubClass doesn't exist"
+            };
+        }
+        
+        if (subClass.IsDelete)
+        {
+            return new EnrollmentCreateResponseModel
+            {
+                IsSuccess = false,
+                Message = "Cannot enroll in a deleted SubClass."
+            };
+        }
+        
         if (subClass.StudentLimit <= subClass.StudentCount)
         {
             return new EnrollmentCreateResponseModel
             {
+                IsSuccess = false,
                 Message = "StudentLimit is full"
             };
         }
