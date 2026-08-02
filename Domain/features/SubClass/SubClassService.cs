@@ -34,11 +34,11 @@ public class SubClassService
         //SubClasses = Classes,
         var SubClasses = _db.TblSubClasses.Select(x => new SubClassModel
         {
-            SubClassId = x.SubClassId,
             ClassName = x.ClassName,
             Location = x.Location,
             OpenDate = x.OpenDate,
             StudentLimit = x.StudentLimit,
+            StudentCount = x.StudentCount,
             OpenTime = x.OpenTime,
             CreatedDateTime = x.CreatedDateTime,
             CreatedBy = x.CreatedBy,
@@ -73,6 +73,7 @@ public class SubClassService
             Location = subClass.Location,
             OpenDate = subClass.OpenDate,
             StudentLimit = subClass.StudentLimit,
+            StudentCount = subClass.StudentCount,
             OpenTime = subClass.OpenTime,
             CreatedDateTime = subClass.CreatedDateTime,
             CreatedBy = subClass.CreatedBy,
@@ -89,6 +90,7 @@ public class SubClassService
             Location = model.Location,
             OpenDate = model.OpenDate,
             StudentLimit = model.StudentLimit,
+            StudentCount = 0,
             OpenTime = model.OpenTime,
             CreatedDateTime = DateTime.Now,
             CreatedBy = model.CreatedBy,
@@ -161,7 +163,7 @@ public class SubClassService
                 Message = "SubClass doesn't exist"
             };
         }
-        _db.Remove(subClass);
+        subClass.IsDelete = true;
         int result = _db.SaveChanges();
         return new SubClassDeleteResponseModel
         {

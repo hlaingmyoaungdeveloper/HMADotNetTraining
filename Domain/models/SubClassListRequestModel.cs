@@ -26,6 +26,8 @@ public class SubClassModel
 
     public int StudentLimit { get; set; }
 
+    public int StudentCount { get; set; }
+
     public TimeOnly OpenTime { get; set; }
 
     public DateTime CreatedDateTime { get; set; }
