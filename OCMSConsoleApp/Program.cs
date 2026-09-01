@@ -35,24 +35,12 @@ while (true)
                 {
                     Console.WriteLine($"Found {subClassesResponse.SubClasses?.Count ?? 0} subclasses.");
                     
-                    // Workaround to get IDs since Domain doesn't return them
                     var classes = subClassesResponse.SubClasses ?? new System.Collections.Generic.List<SubClassModel>();
-                    try
-                    {
-                        using var db = new June2026.OCMSDatabase.AppDbContextModels.AppDbContext();
-                        var dbClasses = db.TblSubClasses.Where(x => !x.IsDelete).ToList();
-                        foreach (var sc in classes)
-                        {
-                            var match = dbClasses.FirstOrDefault(x => x.ClassName == sc.ClassName && x.Location == sc.Location && x.CreatedDateTime == sc.CreatedDateTime);
-                            if (match != null) sc.SubClassId = match.SubClassId;
-                        }
-                    }
-                    catch { }
 
                     int index = 1;
                     foreach (var subClass in classes)
                     {
-                        Console.WriteLine($"{index++}. [ID: {subClass.SubClassId}] {subClass.ClassName} | Location: {subClass.Location} | Limit: {subClass.StudentLimit} | Enrolled: {subClass.StudentCount}");
+                        Console.WriteLine($"{index++}. {subClass.ClassName} | Location: {subClass.Location} | Limit: {subClass.StudentLimit} | Enrolled: {subClass.StudentCount}");
                     }
                 }
                 else
@@ -169,8 +157,7 @@ while (true)
                     int index = 1;
                     foreach (var enrollment in enrolls)
                     {
-                        // Note: ID will be 0 due to domain restrictions, so we display No. index
-                        Console.WriteLine($"{index++}. Student: {enrollment.StudentName} | SubClass ID: {enrollment.SubClassId} | Status: {enrollment.Status}");
+                        Console.WriteLine($"{index++}. Student: {enrollment.StudentName} | Status: {enrollment.Status}");
                     }
                 }
                 else
@@ -186,7 +173,7 @@ while (true)
                     var response = enrollmentService.GetEnrollment(new EnrollmentEditRequestModel { EnrollmentId = enrId });
                     if (response.IsSuccess)
                     {
-                        Console.WriteLine($"Student: {response.StudentName}, Contact: {response.StudentContact}, SubClass ID: {response.SubClassId}, Status: {response.Status}");
+                        Console.WriteLine($"Student: {response.StudentName}, Contact: {response.StudentContact}, Status: {response.Status}");
                     }
                     else
                     {

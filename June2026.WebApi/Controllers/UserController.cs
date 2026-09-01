@@ -11,9 +11,9 @@ public class UserController : ControllerBase
 {
     private readonly AppDbContext _dbContent;
 
-    public UserController()
+    public UserController(AppDbContext db)
     {
-        _dbContent = new AppDbContext();
+        _dbContent = db;
     }
 
     [HttpGet]
