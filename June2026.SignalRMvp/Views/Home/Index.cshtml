@@ -1,0 +1,164 @@
+@{
+    ViewData["Title"] = "SignalR Real-Time MVP";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h2>⚡ SignalR Real-Time MVP</h2>
+        
+        <!-- FEATURE 1: Connection Status Indicator -->
+        <div class="d-flex align-items-center gap-2">
+            <span class="fw-bold">Status:</span>
+            <span id="statusBadge" class="badge bg-danger fs-6">Disconnected</span>
+        </div>
+    </div>
+
+    <!-- Live Toast/Alert Banner Container -->
+    <div id="alertContainer"></div>
+
+    <div class="row g-4">
+        <!-- FEATURE 2: Global Click Counter -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">1. Global Shared Counter</h5>
+                </div>
+                <div class="card-body text-center d-flex flex-column justify-content-center align-items-center">
+                    <p class="text-muted mb-1">Total Clicks Across All Clients</p>
+                    <h1 id="counterDisplay" class="display-2 fw-bold text-primary">0</h1>
+                    <button id="btnIncrement" class="btn btn-primary btn-lg mt-3" disabled>
+                        ➕ Click Me to Increment (+1)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEATURE 3: Global Broadcast Alert -->
+        <div class="col-md-6">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">2. Global Broadcast Alert</h5>
+                </div>
+                <div class="card-body d-flex flex-column justify-content-center">
+                    <p class="text-muted">Broadcast a notification message instantly to every connected user:</p>
+                    <div class="mb-3">
+                        <input type="text" id="alertInput" class="form-control form-control-lg" placeholder="Type notification text..." />
+                    </div>
+                    <button id="btnSendAlert" class="btn btn-success btn-lg" disabled>
+                        📢 Send Notification
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- SignalR Client Library -->
+    <script src="~/js/signalr/dist/browser/signalr.js"></script>
+    
+    <script>
+        // -------------------------------------------------------------
+        // STEP 1: Create Hub Connection targeting endpoint "/mvpHub"
+        // -------------------------------------------------------------
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/mvpHub")
+            .withAutomaticReconnect() // Auto reconnect on network drops
+            .build();
+
+        const statusBadge = document.getElementById("statusBadge");
+        const btnIncrement = document.getElementById("btnIncrement");
+        const btnSendAlert = document.getElementById("btnSendAlert");
+        const counterDisplay = document.getElementById("counterDisplay");
+        const alertInput = document.getElementById("alertInput");
+        const alertContainer = document.getElementById("alertContainer");
+
+        // Helper function to update status badge (Green for connected, Red for disconnected)
+        function setStatus(text, bgClass) {
+            statusBadge.textContent = text;
+            statusBadge.className = `badge ${bgClass} fs-6`;
+        }
+
+        // -------------------------------------------------------------
+        // FEATURE 1: Connection Lifecycle Listeners
+        // -------------------------------------------------------------
+        connection.onreconnecting(() => {
+            setStatus("Reconnecting...", "bg-warning text-dark");
+            btnIncrement.disabled = true;
+            btnSendAlert.disabled = true;
+        });
+
+        connection.onreconnected(() => {
+            setStatus("Connected", "bg-success");
+            btnIncrement.disabled = false;
+            btnSendAlert.disabled = false;
+        });
+
+        connection.onclose(() => {
+            setStatus("Disconnected", "bg-danger");
+            btnIncrement.disabled = true;
+            btnSendAlert.disabled = true;
+        });
+
+        // -------------------------------------------------------------
+        // FEATURE 2: Listen for Counter Updates from Server
+        // Event Flow: Server -> Client ("UpdateClickCount")
+        // -------------------------------------------------------------
+        connection.on("UpdateClickCount", function (newCount) {
+            counterDisplay.textContent = newCount;
+        });
+
+        // -------------------------------------------------------------
+        // FEATURE 3: Listen for Global Broadcast Notifications
+        // Event Flow: Server -> Client ("ReceiveAlert")
+        // -------------------------------------------------------------
+        connection.on("ReceiveAlert", function (message) {
+            // Trigger a visual alert banner on the page
+            const alertBox = document.createElement("div");
+            alertBox.className = "alert alert-warning alert-dismissible fade show shadow-sm";
+            alertBox.innerHTML = `
+                <strong>📢 Global Notification:</strong> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            alertContainer.prepend(alertBox);
+
+            // Optional standard JS alert dialog:
+            // alert("Global Alert: " + message);
+        });
+
+        // -------------------------------------------------------------
+        // STEP 2: Start SignalR Connection
+        // -------------------------------------------------------------
+        connection.start()
+            .then(function () {
+                setStatus("Connected", "bg-success");
+                btnIncrement.disabled = false;
+                btnSendAlert.disabled = false;
+            })
+            .catch(function (err) {
+                setStatus("Error Connecting", "bg-danger");
+                console.error("SignalR Connection Error: ", err);
+            });
+
+        // -------------------------------------------------------------
+        // FEATURE 2 ACTION: Invoke Server method to Increment Counter
+        // Event Flow: Client -> Server ("IncrementCounter")
+        // -------------------------------------------------------------
+        btnIncrement.addEventListener("click", function () {
+            connection.invoke("IncrementCounter").catch(err => console.error(err));
+        });
+
+        // -------------------------------------------------------------
+        // FEATURE 3 ACTION: Invoke Server method to Broadcast Notification
+        // Event Flow: Client -> Server ("BroadcastAlert")
+        // -------------------------------------------------------------
+        btnSendAlert.addEventListener("click", function () {
+            const message = alertInput.value.trim();
+            if (message) {
+                connection.invoke("BroadcastAlert", message)
+                    .then(() => { alertInput.value = ""; })
+                    .catch(err => console.error(err));
+            }
+        });
+    </script>
+}
